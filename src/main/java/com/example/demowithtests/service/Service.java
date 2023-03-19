@@ -18,4 +18,12 @@ public interface Service {
 
     void removeAll();
 
+    List<Employee> processor();
+
+    List<Employee> sendEmailByCountry(String country, String text);
+
+    List<Employee> sendEmailByCity(String city, String text);
+
+    List<Employee> sendEmailByCitySQL(String city, String text);
+
 }

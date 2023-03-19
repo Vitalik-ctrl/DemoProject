@@ -33,6 +33,7 @@ public class Controller {
     //Получения юзера по id
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
+    //  public Employee getEmployeeById(@RequestParam("id") Integer id) {
     public Employee getEmployeeById(@PathVariable Integer id) {
 
         Employee employee = service.getById(id);
@@ -43,7 +44,6 @@ public class Controller {
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Employee refreshEmployee(@PathVariable("id") Integer id, @RequestBody Employee employee) {
-
         return service.updateById(id, employee);
     }
 
@@ -59,5 +59,29 @@ public class Controller {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeAllUsers() {
         service.removeAll();
+    }
+
+    @GetMapping("/replaceNull")
+    @ResponseStatus(HttpStatus.OK)
+    public void replace() {
+        service.processor();
+    }
+
+    @PostMapping("/sendEmail")
+    @ResponseStatus(HttpStatus.OK)
+    public void sendEmail(@RequestParam String country, @RequestParam String text) {
+        service.sendEmailByCountry(country, text);
+    }
+
+    @PostMapping("/sendEmailByCity")
+    @ResponseStatus(HttpStatus.OK)
+    public void sendEmailByCity(@RequestParam String city, @RequestParam String text) {
+        service.sendEmailByCountry(city, text);
+    }
+
+    @PostMapping("sendEmailByCitySQL")
+    @ResponseStatus(HttpStatus.OK)
+    public void sendEmailByCitySQL(@RequestParam String city, @RequestParam String text) {
+        service.sendEmailByCitySQL(city, text);
     }
 }

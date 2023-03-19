@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -37,7 +38,6 @@ public class ServiceBean implements Service {
         } catch (Exception e) {
             throw new UnhandledException();
         }
-
     }
 
     @Override
@@ -92,4 +92,50 @@ public class ServiceBean implements Service {
         }
 
     }
+
+    @Override
+    public List<Employee> processor() {
+        log.info("replace null - start");
+        List<Employee> replaceNull = repository.findEmployeeByIsDeletedNull();
+        for (Employee employee: replaceNull) {
+            employee.setIsDeleted(Boolean.FALSE);
+        }
+        log.info("replaced collection = {}", replaceNull);
+        log.info("replace null - finish");
+        return repository.saveAll(replaceNull);
+    }
+
+    @Override
+    public List<Employee> sendEmailByCountry(String country, String text) {
+        List<Employee> employees = repository.findEmployeeByCountry(country);
+        mailSender(extracted(employees), text);
+        return employees;
+    }
+
+    @Override
+    public List<Employee> sendEmailByCity(String city, String text) {
+        List<Employee> employees = repository.findEmployeeByAddresses(city);
+        mailSender(extracted(employees), text);
+        return employees;
+    }
+
+    @Override
+    public List<Employee> sendEmailByCitySQL(String city, String text) {
+        List<Employee> employees = repository.findEmployeeByAddressesSQL(city);
+        mailSender(extracted(employees), text);
+        return employees;
+    }
+
+    private static List<String> extracted(List<Employee> employees) {
+        List<String> emails = new ArrayList<>();
+        for (Employee employee: employees) {
+            emails.add(employee.getEmail());
+        }
+        return emails;
+    }
+
+    public void mailSender(List<String> emails, String text) {
+        log.info("Emails were successfully sent.");
+    }
+
 }
