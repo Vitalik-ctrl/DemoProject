@@ -78,10 +78,4 @@ public class Controller {
     public void sendEmailByCity(@RequestParam String city, @RequestParam String text) {
         service.sendEmailByCountry(city, text);
     }
-
-    @PostMapping("sendEmailByCitySQL")
-    @ResponseStatus(HttpStatus.OK)
-    public void sendEmailByCitySQL(@RequestParam String city, @RequestParam String text) {
-        service.sendEmailByCitySQL(city, text);
-    }
 }
