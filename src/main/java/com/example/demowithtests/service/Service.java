@@ -24,4 +24,12 @@ public interface Service {
 
     List<Employee> sendEmailByCity(String city, String text);
 
+    void fillData(Integer range, String name, String email);
+
+    void updateData(Integer startID, Integer endID);
+
+    void updateCountryDataByPatch(Integer startID, Integer endID);
+
+    void updateCountryDataByMerge(Integer startID, Integer endID);
+
 }

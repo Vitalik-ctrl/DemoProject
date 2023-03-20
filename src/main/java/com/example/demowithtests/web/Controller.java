@@ -3,12 +3,14 @@ package com.example.demowithtests.web;
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.service.Service;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,4 +80,33 @@ public class Controller {
     public void sendEmailByCity(@RequestParam String city, @RequestParam String text) {
         service.sendEmailByCountry(city, text);
     }
+
+    @GetMapping("/fillData")
+    @ResponseStatus(HttpStatus.OK)
+    public void fillData(@RequestParam Integer range, @RequestParam String name, @RequestParam String email) {
+        service.fillData(range, name, email);
+        log.info("Data was successfully uploaded.");
+    }
+
+    @PutMapping("/updateUsersRange")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateByIdRange(@RequestParam Integer startID, @RequestParam Integer endID) {
+        service.updateData(startID, endID);
+        log.info("Data was successfully updated.");
+    }
+
+    @PutMapping("/updateUsersRangePatch")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateByIdRangePatch(@RequestParam Integer startID, @RequestParam Integer endID) {
+        service.updateCountryDataByPatch(startID, endID);
+        log.info("Data was successfully updated.");
+    }
+
+    @PutMapping("/updateCountryDataByMerge")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateCountryDataByMerge(@RequestParam Integer startID, @RequestParam Integer endID) {
+        service.updateCountryDataByMerge(startID, endID);
+        log.info("Data was successfully updated.");
+    }
+
 }

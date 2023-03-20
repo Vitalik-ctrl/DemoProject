@@ -22,4 +22,7 @@ public interface Repository extends JpaRepository<Employee, Integer> {
     @Query(value = "select e from Employee e join Address a where a.city=:city")
     List<Employee> findEmployeeByAddresses(String city);
 
+    @Query(value = "select * from users where id between ?1 and ?2", nativeQuery = true)
+    List<Employee> findEmployeeRangeById(Integer startID, Integer endID);
+
 }

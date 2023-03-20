@@ -28,6 +28,13 @@ public class Employee {
     @JoinColumn(name = "employee_id")
     private Set<Address> addresses = new HashSet<>();
 
+    public Employee(String name, String country, String email, Boolean isDeleted) {
+        this.name = name;
+        this.country = country;
+        this.email = email;
+        this.isDeleted = isDeleted;
+    }
+
     public Set<Address> getAddresses() {
         return addresses;
     }

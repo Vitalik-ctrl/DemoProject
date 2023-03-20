@@ -8,7 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Slf4j
@@ -19,9 +22,9 @@ public class ServiceBean implements Service {
 
     @Override
     public Employee create(Employee employee) {
-        if (repository.findByEmail(employee.getEmail()) != null) {
-            throw new EmailDuplicatedException();
-        }
+//        if (repository.findByEmail(employee.getEmail()) != null) {
+//            throw new EmailDuplicatedException();
+//        }
         if (employee.getName().equals("")) {
             throw new NameIsEmptyException();
         }
@@ -119,6 +122,51 @@ public class ServiceBean implements Service {
         return employees;
     }
 
+    // Improved method
+    @Override
+    public void fillData(Integer range, String name, String email) {
+        for (int i = 0; i < range; i++) {
+            Employee employee = new Employee(name, generateCountry(), email, Boolean.FALSE);
+            repository.save(employee);
+        }
+    }
+
+    // Old Method
+    @Override
+    public void updateData(Integer startID, Integer endID) {
+        List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
+        for (Employee employee: employees) {
+            employee.setCountry("Denmark");
+        }
+        repository.saveAll(employees);
+    }
+
+    // Improved method
+    @Override
+    public void updateCountryDataByPatch(Integer startID, Integer endID) {
+        List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
+        for (Employee employee: employees) {
+            String generatedCountry = generateCountry();
+            log.info("Generated Country={}", generatedCountry);
+            if (checkEmployeeOnUpdate(employee, generatedCountry)) {
+                employee.setCountry(generatedCountry);
+            }
+        }
+        repository.saveAll(employees);
+    }
+
+    @Override
+    public void updateCountryDataByMerge(Integer startID, Integer endID) {
+        List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
+        repository.saveAll(employees.stream()
+                .map(e -> new Employee(e.getName(), e.getEmail(), generateCountry(), Boolean.FALSE))
+                .collect(Collectors.toList()));
+    }
+
+    private static Boolean checkEmployeeOnUpdate(Employee employee, String country) {
+        return !employee.getCountry().equals(country);
+    }
+
     private static List<String> extracted(List<Employee> employees) {
         List<String> emails = new ArrayList<>();
         for (Employee employee: employees) {
@@ -129,6 +177,23 @@ public class ServiceBean implements Service {
 
     public void mailSender(List<String> emails, String text) {
         log.info("Emails were successfully sent.");
+    }
+
+    public String generateCountry() {
+        List<String> countries = new ArrayList<>();
+        countries.add("Germany");
+        countries.add("Ukraine");
+        countries.add("Poland");
+        countries.add("USA");
+        countries.add("China");
+        countries.add("Italy");
+        countries.add("The Czech Republic");
+        countries.add("Switzerland");
+        countries.add("Norway");
+        countries.add("Japan");
+        Random random = new Random();
+        String country = countries.get(random.nextInt(countries.size()));
+        return country;
     }
 
 }
