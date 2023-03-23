@@ -1,13 +1,17 @@
 package com.example.demowithtests.web;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.dto.EmployeeDto;
+import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.service.Service;
+import com.example.demowithtests.util.orika.EmployeeConverter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -17,36 +21,50 @@ import java.util.List;
 public class Controller {
 
     private final Service service;
+    private final EmployeeConverter employeeConverter;
 
     //Операция сохранения юзера в базу данных
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee saveEmployee(@RequestBody Employee employee) {
-        return service.create(employee);
+    public EmployeeReadDto saveEmployee(@RequestBody EmployeeDto employeeDto) {
+        log.info("--> saveEmployee :: start");
+     //   var employeeToDto = employeeConverter.getMapperFacade().map(employee, Employee.class);
+        var employeeToDto = employeeConverter.fromDto(employeeDto);
+        var dto = employeeConverter.toReadDto(service.create(employeeToDto));
+        log.info("--> saveEmployee :: finish");
+        return dto;
     }
 
     //Получение списка юзеров
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getAllUsers() {
-        return service.getAll();
+    public List<EmployeeReadDto> getAllUsers() {
+        log.info("--> getAllUsers :: start");
+        List<Employee> employees = service.getAll();
+        List<EmployeeReadDto> employeesReadDto = new ArrayList<>();
+        for (Employee employee : employees) {
+            employeesReadDto.add(employeeConverter.toReadDto(employee));
+        }
+        log.info("--> getAllUsers :: finish");
+        return employeesReadDto;
     }
 
     //Получения юзера по id
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    //  public Employee getEmployeeById(@RequestParam("id") Integer id) {
-    public Employee getEmployeeById(@PathVariable Integer id) {
-
-        Employee employee = service.getById(id);
-        return employee;
+    public EmployeeReadDto getEmployeeById(@PathVariable Integer id) {
+        log.info("--> getEmployeeById :: start");
+        EmployeeReadDto employeeReadDto = employeeConverter.toReadDto(service.getById(id));
+        log.info("--> getEmployeeById :: finish with EmployeeReadDto: {}", employeeReadDto);
+        return employeeReadDto;
     }
 
     //Обновление юзера
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Employee refreshEmployee(@PathVariable("id") Integer id, @RequestBody Employee employee) {
-        return service.updateById(id, employee);
+    public EmployeeReadDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
+        log.info("--> refreshEmployee :: {}", employeeDto);
+        return employeeConverter.toReadDto(service.updateById(id, employeeConverter.fromDto(employeeDto)));
     }
 
     //Удаление по id

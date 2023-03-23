@@ -45,11 +45,12 @@ public class ServiceBean implements Service {
 
     @Override
     public Employee getById(Integer id) {
+        log.info("getByID ---");
         var employee = repository.findById(id)
                 .orElseThrow(IdNotFoundException::new);
-        if (employee.getIsDeleted()) {
-            throw new ResourceWasDeletedException();
-        }
+       // if (employee.getIsDeleted()) {
+       //     throw new ResourceWasDeletedException();
+       // }
         return employee;
     }
 
