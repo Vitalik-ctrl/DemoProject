@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,10 +28,10 @@ public class Controller {
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeReadDto saveEmployee(@RequestBody EmployeeDto employeeDto) {
-        log.info("--> saveEmployee :: start");
+        log.info("--> saveEmployee - start. EmployeeDTO :: \n{}", employeeDto);
         Employee employee = mapper.employeeFromEmployeeDto(employeeDto);
         EmployeeReadDto readDto = mapper.toEmployeeReadDto(service.create(employee));
-        log.info("--> saveEmployee :: finish");
+        log.info("--> saveEmployee - finish. ReadDTO :: \n{}", readDto);
         return readDto;
     }
 
@@ -126,4 +127,10 @@ public class Controller {
         log.info("Data was successfully updated.");
     }
 
+    @PostMapping("/sendEmailByLastPhoto")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> sendEmail(@RequestParam Integer startID, @RequestParam Integer endID, @RequestParam Integer days, @RequestParam  String text) {
+        log.info("Start sendEmail");
+        return service.sendEmail(startID, endID, days, text);
+    }
 }

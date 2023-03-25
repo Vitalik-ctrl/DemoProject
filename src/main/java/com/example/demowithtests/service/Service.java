@@ -32,4 +32,6 @@ public interface Service {
 
     void updateCountryDataByMerge(Integer startID, Integer endID);
 
+    List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text);
+
 }

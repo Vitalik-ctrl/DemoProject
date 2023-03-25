@@ -1,14 +1,18 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.repository.Repository;
 import com.example.demowithtests.util.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -161,6 +165,46 @@ public class ServiceBean implements Service {
                 .map(e -> new Employee(e.getName(), e.getEmail(), generateCountry(), Boolean.FALSE))
                 .collect(Collectors.toList()));
     }
+
+    @Override
+    public List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text) {
+        log.info("Start -");
+        List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
+        List<Employee> employeesToMail = findEmployeesByLastPhoto(employees, days);
+        mailSender(extracted(employeesToMail), text);
+        return employeesToMail;
+    }
+
+    private static List<Employee> findEmployeesByLastPhoto(List<Employee> employees, Integer days) {
+        List<Employee> employeesToMail = new ArrayList<>();
+        for (Employee employee: employees) {
+            Set<Photo> photos = employee.getPhotos();
+
+            Date lastPhotoDate = Collections
+                    .max(photos, Comparator.comparing(Photo::getDateCreated))
+                    .getDateCreated();
+
+            LocalDate photoDate = lastPhotoDate
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            LocalDate now = Date
+                    .from(Instant.now())
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            long daysFromLastPhoto = ChronoUnit.DAYS.between(photoDate, now);
+            log.info("{}", daysFromLastPhoto);
+            if (daysFromLastPhoto >= days) {
+                employeesToMail.add(employee);
+                log.info("Employee name {}, employee email {}", employee.getName(), employee.getEmail());
+            }
+        }
+        return employeesToMail;
+    }
+
 
     private static Boolean checkEmployeeOnUpdate(Employee employee, String country) {
         return !employee.getCountry().equals(country);
