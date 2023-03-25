@@ -1,8 +1,8 @@
-package com.example.demowithtests.util;
+package com.example.demowithtests.util.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ResourceWasDeletedException extends RuntimeException{
+public class DataIsEmptyException extends RuntimeException {
 }

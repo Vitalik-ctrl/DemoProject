@@ -4,7 +4,7 @@ import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.service.Service;
-import com.example.demowithtests.util.orika.EmployeeConverter;
+import com.example.demowithtests.util.mupstruct.Mapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,18 +21,17 @@ import java.util.List;
 public class Controller {
 
     private final Service service;
-    private final EmployeeConverter employeeConverter;
+    private final Mapper mapper;
 
     //Операция сохранения юзера в базу данных
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeReadDto saveEmployee(@RequestBody EmployeeDto employeeDto) {
         log.info("--> saveEmployee :: start");
-     //   var employeeToDto = employeeConverter.getMapperFacade().map(employee, Employee.class);
-        var employeeToDto = employeeConverter.fromDto(employeeDto);
-        var dto = employeeConverter.toReadDto(service.create(employeeToDto));
+        Employee employee = mapper.employeeFromEmployeeDto(employeeDto);
+        EmployeeReadDto readDto = mapper.toEmployeeReadDto(service.create(employee));
         log.info("--> saveEmployee :: finish");
-        return dto;
+        return readDto;
     }
 
     //Получение списка юзеров
@@ -43,7 +42,7 @@ public class Controller {
         List<Employee> employees = service.getAll();
         List<EmployeeReadDto> employeesReadDto = new ArrayList<>();
         for (Employee employee : employees) {
-            employeesReadDto.add(employeeConverter.toReadDto(employee));
+            employeesReadDto.add(mapper.toEmployeeReadDto(employee));
         }
         log.info("--> getAllUsers :: finish");
         return employeesReadDto;
@@ -54,7 +53,7 @@ public class Controller {
     @ResponseStatus(HttpStatus.OK)
     public EmployeeReadDto getEmployeeById(@PathVariable Integer id) {
         log.info("--> getEmployeeById :: start");
-        EmployeeReadDto employeeReadDto = employeeConverter.toReadDto(service.getById(id));
+        EmployeeReadDto employeeReadDto = mapper.toEmployeeReadDto(service.getById(id));
         log.info("--> getEmployeeById :: finish with EmployeeReadDto: {}", employeeReadDto);
         return employeeReadDto;
     }
@@ -64,7 +63,7 @@ public class Controller {
     @ResponseStatus(HttpStatus.OK)
     public EmployeeReadDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
         log.info("--> refreshEmployee :: {}", employeeDto);
-        return employeeConverter.toReadDto(service.updateById(id, employeeConverter.fromDto(employeeDto)));
+        return mapper.toEmployeeReadDto(service.updateById(id, mapper.employeeFromEmployeeDto(employeeDto)));
     }
 
     //Удаление по id
