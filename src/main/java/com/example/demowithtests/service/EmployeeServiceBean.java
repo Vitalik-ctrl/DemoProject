@@ -1,16 +1,11 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.repository.Repository;
 import com.example.demowithtests.util.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,22 +18,28 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Employee create(Employee employee) {
-//        if (repository.findByEmail(employee.getEmail()) != null) {
-//            throw new EmailDuplicatedException();
-//        }
+        log.debug("Service ==> create() - start: employee = {}", employee);
+        if (repository.findByEmail(employee.getEmail()) != null) {
+            throw new EmailDuplicatedException();
+        }
         if (employee.getName().equals("")) {
             throw new NameIsEmptyException();
         }
-        return repository.save(employee);
+        Employee createdEmployee = repository.save(employee);
+        log.debug("Service ==> create() - end: employee = {}", createdEmployee);
+        return createdEmployee;
     }
 
     @Override
     public List<Employee> getAll() {
+        log.debug("Service ==> getAll() - start: ");
         if (repository.findAll().size() == 0) {
             throw new DataIsEmptyException();
         }
         try {
-            return repository.findAll();
+            List<Employee> allEmployees = repository.findAll();
+            log.debug("Service ==> getAll() - end: ");
+            return allEmployees;
         } catch (Exception e) {
             throw new UnhandledException();
         }
@@ -46,35 +47,35 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Employee getById(Integer id) {
-        log.info("getByID ---");
+        log.debug("Service ==> getById() - start: id = {}", id);
         var employee = repository.findById(id)
                 .orElseThrow(IdNotFoundException::new);
-       // if (employee.getIsDeleted()) {
-       //     throw new ResourceWasDeletedException();
-       // }
+        if (employee.getIsDeleted()) {
+            throw new ResourceWasDeletedException();
+        }
+        log.debug("Service ==> getById() - end: employee = {}", employee);
         return employee;
     }
 
     @Override
     public Employee updateById(Integer id, Employee employee) {
-        if (repository.findById(id).isPresent()) {
-            if (repository.findById(id).get().equals(employee)) {
-                throw new OldValuesException();
-            }
-            return repository.findById(id)
-                    .map(entity -> {
-                        entity.setName(employee.getName());
-                        entity.setEmail(employee.getEmail());
-                        entity.setCountry(employee.getCountry());
-                        return repository.save(entity);
-                    }).get();
-        } else {
-            throw new IdNotFoundException();
+        log.debug("Service ==> updateById() - start: id = {}, employee = {}", id, employee);
+        Employee existingEmployee = repository.findById(id)
+                .orElseThrow(IdNotFoundException::new);
+        if (existingEmployee.equals(employee)) {
+            throw new OldValuesException();
         }
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setEmail(employee.getEmail());
+        existingEmployee.setCountry(employee.getCountry());
+        Employee updatedEmployee = repository.save(existingEmployee);
+        log.debug("Service ==> updateById() - end: employee = {}", updatedEmployee);
+        return updatedEmployee;
     }
 
     @Override
     public void removeById(Integer id) {
+        log.debug("Service ==> removeById() - start: id = {}", id);
         var employee = repository.findById(id)
                 .orElseThrow(IdNotFoundException::new);
         if (employee.getIsDeleted()) {
@@ -82,171 +83,121 @@ public class EmployeeServiceBean implements EmployeeService {
         }
         employee.setIsDeleted(true);
         repository.save(employee);
+        log.debug("Service ==> removeById() - end: deleted employee = {}", employee);
     }
 
     @Override
     public void removeAll() {
+        log.debug("Service ==> removeAll() - start: ");
         if (repository.findAll().size() == 0) {
             throw new DataIsEmptyException();
         }
-
         try {
             repository.deleteAll();
         } catch (Exception e) {
             throw new UnhandledException();
         }
-
+        log.debug("Service ==> removeAll() - end: ");
     }
 
     @Override
     public List<Employee> processor() {
-        log.info("replace null - start");
+        log.debug("Service ==> processor() - start: ");
         List<Employee> replaceNull = repository.findEmployeeByIsDeletedNull();
-        for (Employee employee: replaceNull) {
+        for (Employee employee : replaceNull) {
             employee.setIsDeleted(Boolean.FALSE);
         }
-        log.info("replaced collection = {}", replaceNull);
-        log.info("replace null - finish");
+        log.debug("Service ==> processor() - end: collection = {}", replaceNull);
         return repository.saveAll(replaceNull);
     }
 
     @Override
     public List<Employee> sendEmailByCountry(String country, String text) {
+        log.debug("Service ==> sendEmailByCountry() - start: country = {}", country);
         List<Employee> employees = repository.findEmployeeByCountry(country);
-        mailSender(extracted(employees), text);
+        EmployeeServiceUtil.mailSender(EmployeeServiceUtil.extracted(employees), text);
+        log.debug("Service ==> sendEmailByCountry() - end: employees = {}", employees);
         return employees;
     }
 
     @Override
     public List<Employee> sendEmailByCity(String city, String text) {
+        log.debug("Service ==> sendEmailByCity() - start: city = {}", city);
         List<Employee> employees = repository.findEmployeeByAddresses(city);
-        mailSender(extracted(employees), text);
+        EmployeeServiceUtil.mailSender(EmployeeServiceUtil.extracted(employees), text);
+        log.debug("Service ==> sendEmailByCity() - end: employees = {}", employees);
         return employees;
     }
 
     // Improved method
     @Override
     public void fillData(Integer range, String name, String email) {
+        log.debug("Service ==> fillData() - start: range = {}, name = {}, email = {}", range, name, email);
         for (int i = 0; i < range; i++) {
-            Employee employee = new Employee(name, generateCountry(), email, Boolean.FALSE);
+            Employee employee = new Employee(name, EmployeeServiceUtil.generateCountry(), email, Boolean.FALSE);
             repository.save(employee);
         }
+        log.debug("Service ==> fillData() - end: ");
     }
 
     // Old Method
     @Override
     public void updateData(Integer startID, Integer endID) {
+        log.debug("Service ==> updateData() - start: range = [{},{}]", startID, endID);
         List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
-        for (Employee employee: employees) {
+        for (Employee employee : employees) {
             employee.setCountry("Denmark");
         }
         repository.saveAll(employees);
+        log.debug("Service ==> updateData() - end: employees = {}", employees);
     }
 
     // Improved method
     @Override
     public void updateCountryDataByPatch(Integer startID, Integer endID) {
+        log.debug("Service ==> updateCountryDataByPatch() - start: range = [{},{}]", startID, endID);
         List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
-        for (Employee employee: employees) {
-            String generatedCountry = generateCountry();
+        for (Employee employee : employees) {
+            String generatedCountry = EmployeeServiceUtil.generateCountry();
             log.info("Generated Country={}", generatedCountry);
-            if (checkEmployeeOnUpdate(employee, generatedCountry)) {
+            if (EmployeeServiceUtil.checkEmployeeOnUpdate(employee, generatedCountry)) {
                 employee.setCountry(generatedCountry);
             }
         }
         repository.saveAll(employees);
+        log.debug("Service ==> updateCountryDataByPatch() - end: employees = {}", employees);
     }
 
     @Override
     public void updateCountryDataByMerge(Integer startID, Integer endID) {
+        log.debug("Service ==> updateCountryDataByMerge() - start: range = [{},{}]", startID, endID);
         List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
         repository.saveAll(employees.stream()
-                .map(e -> new Employee(e.getName(), e.getEmail(), generateCountry(), Boolean.FALSE))
+                .map(e -> new Employee(e.getName(), e.getEmail(), EmployeeServiceUtil.generateCountry(), Boolean.FALSE))
                 .collect(Collectors.toList()));
+        log.debug("Service ==> updateCountryDataByMerge() - end: employees = {}", employees);
     }
 
     @Override
     public List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text) {
+        log.debug("Service ==> sendEmail() - start: range = [{},{}], days = {}", startID, endID, days);
         List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
-        List<Employee> employeesToMail = findEmployeesByLastPhoto(employees, days);
-        mailSender(extracted(employeesToMail), text);
+        List<Employee> employeesToMail = EmployeeServiceUtil.findEmployeesByLastPhoto(employees, days);
+        EmployeeServiceUtil.mailSender(EmployeeServiceUtil.extracted(employeesToMail), text);
+        log.debug("Service ==> sendEmail() - end: employees = {}", employees);
         return employeesToMail;
     }
 
     @Override
     public List<Employee> getEmployeeMetrics(String country) {
+        log.debug("Service ==> getEmployeeMetrics() - start: country = {}", country);
         List<Employee> employees = repository.findEmployeesByAddressCountry(country);
         var addresses = employees.stream()
                 .filter(employee -> employee.getAddresses().stream()
                         .anyMatch(address -> address.getCountry().equals(country) && !address.getAddressHasActive()))
                 .collect(Collectors.toList());
-        mailSender(extracted(addresses), "russia will be destroyed by Ukrainians");
-        log.info("Emails were send to {} users", addresses.size());
+        EmployeeServiceUtil.mailSender(EmployeeServiceUtil.extracted(addresses), "russia will be destroyed by Ukrainians");
+        log.debug("Service ==> getEmployeeMetrics() - end: employees = {}", employees);
         return addresses;
     }
-
-    private static List<Employee> findEmployeesByLastPhoto(List<Employee> employees, Integer days) {
-        List<Employee> employeesToMail = new ArrayList<>();
-        for (Employee employee: employees) {
-            Set<Photo> photos = employee.getPhotos();
-
-            Date lastPhotoDate = Collections
-                    .max(photos, Comparator.comparing(Photo::getDateCreated))
-                    .getDateCreated();
-
-            LocalDate photoDate = lastPhotoDate
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-
-            LocalDate now = Date
-                    .from(Instant.now())
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-
-            long daysFromLastPhoto = ChronoUnit.DAYS.between(photoDate, now);
-            log.info("{}", daysFromLastPhoto);
-            if (daysFromLastPhoto >= days) {
-                employeesToMail.add(employee);
-                log.info("Employee name {}, employee email {}", employee.getName(), employee.getEmail());
-            }
-        }
-        return employeesToMail;
-    }
-
-
-    private static Boolean checkEmployeeOnUpdate(Employee employee, String country) {
-        return !employee.getCountry().equals(country);
-    }
-
-    private static List<String> extracted(List<Employee> employees) {
-        List<String> emails = new ArrayList<>();
-        for (Employee employee: employees) {
-            emails.add(employee.getEmail());
-        }
-        return emails;
-    }
-
-    public void mailSender(List<String> emails, String text) {
-        log.info("Emails were successfully sent.");
-    }
-
-    public String generateCountry() {
-        List<String> countries = new ArrayList<>();
-        countries.add("Germany");
-        countries.add("Ukraine");
-        countries.add("Poland");
-        countries.add("USA");
-        countries.add("China");
-        countries.add("Italy");
-        countries.add("The Czech Republic");
-        countries.add("Switzerland");
-        countries.add("Norway");
-        countries.add("Japan");
-        Random random = new Random();
-        String country = countries.get(random.nextInt(countries.size()));
-        return country;
-    }
-
 }

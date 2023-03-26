@@ -25,97 +25,118 @@ public class EmployeeControllerBean implements EmployeeController {
     private final Mapper mapper;
 
     @Override
-    public EmployeeReadDto saveEmployee(@RequestBody EmployeeDto employeeDto) {
-        log.info("--> saveEmployee - start. EmployeeDTO :: \n{}", employeeDto);
+    public EmployeeReadDto saveEmployee(EmployeeDto employeeDto) {
+        log.info("Controller ==> saveEmployee() - start: employeeDto = {}", employeeDto);
         Employee employee = mapper.employeeFromEmployeeDto(employeeDto);
         EmployeeReadDto readDto = mapper.toEmployeeReadDto(service.create(employee));
-        log.info("--> saveEmployee - finish. ReadDTO :: \n{}", readDto);
+        log.info("Controller ==> saveEmployee() - end: employeeReadDto = {}", readDto);
         return readDto;
     }
 
     @Override
     public List<EmployeeReadDto> getAllUsers() {
-        log.info("--> getAllUsers :: start");
+        log.info("Controller ==> getAllUsers() - start: ");
         List<Employee> employees = service.getAll();
         List<EmployeeReadDto> employeesReadDto = new ArrayList<>();
         for (Employee employee : employees) {
             employeesReadDto.add(mapper.toEmployeeReadDto(employee));
         }
-        log.info("--> getAllUsers :: finish");
+        log.info("Controller ==> getAllUsers() - end: ");
         return employeesReadDto;
     }
 
     @Override
-    public EmployeeReadDto getEmployeeById(@PathVariable Integer id) {
-        log.info("--> getEmployeeById :: start");
+    public EmployeeReadDto getEmployeeById(Integer id) {
+        log.info("Controller ==> getEmployeeById() - start: id = {}", id);
         EmployeeReadDto employeeReadDto = mapper.toEmployeeReadDto(service.getById(id));
-        log.info("--> getEmployeeById :: finish with EmployeeReadDto: {}", employeeReadDto);
+        log.info("Controller ==> getEmployeeById() - end: employeeReadDto = {}", employeeReadDto);
         return employeeReadDto;
     }
 
     @Override
-    public EmployeeReadDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
-        log.info("--> refreshEmployee :: {}", employeeDto);
-        return mapper.toEmployeeReadDto(service.updateById(id, mapper.employeeFromEmployeeDto(employeeDto)));
+    public EmployeeReadDto refreshEmployee(Integer id, EmployeeDto employeeDto) {
+        log.info("Controller ==> refreshEmployee() - start: id = {}, employeeDto = {}", id, employeeDto);
+        EmployeeReadDto employeeReadDto = mapper.toEmployeeReadDto(service.updateById(id, mapper.employeeFromEmployeeDto(employeeDto)));
+        log.info("Controller ==> refreshEmployee() - end: id = {}, employeeReadDto = {}", id, employeeReadDto);
+        return employeeReadDto;
     }
 
     @Override
-    public void removeEmployeeById(@PathVariable Integer id) {
+    public void removeEmployeeById(Integer id) {
+        log.info("Controller ==> removeEmployeeById() - start: id = {}", id);
         service.removeById(id);
+        log.info("Controller ==> removeEmployeeById() - end: ");
     }
 
     @Override
     public void removeAllUsers() {
+        log.info("Controller ==> removeAllUsers() - start: ");
         service.removeAll();
+        log.info("Controller ==> removeAllUsers() - end: ");
     }
 
     @Override
     public void replace() {
+        log.info("Controller ==> replace() - start: ");
         service.processor();
+        log.info("Controller ==> replace() - end: ");
     }
 
     @Override
-    public void sendEmail(@RequestParam String country, @RequestParam String text) {
+    public void sendEmail(String country, String text) {
+        log.info("Controller ==> sendEmail() - start: country = {}", country);
         service.sendEmailByCountry(country, text);
+        log.info("Controller ==> sendEmail() - end: ");
     }
 
     @Override
-    public void sendEmailByCity(@RequestParam String city, @RequestParam String text) {
+    public void sendEmailByCity(String city, String text) {
+        log.info("Controller ==> sendEmailByCity() - start: city = {}", city);
         service.sendEmailByCountry(city, text);
+        log.info("Controller ==> sendEmailByCity() - end: ");
     }
 
     @Override
-    public void fillData(@RequestParam Integer range, @RequestParam String name, @RequestParam String email) {
+    public void fillData(Integer range, String name, String email) {
+        log.info("Controller ==> fillData() - start: range = {}, name = {}, email = {}", range, name, email);
         service.fillData(range, name, email);
-        log.info("Data was successfully uploaded.");
+        log.info("Controller ==> fillData() - end: ");
     }
 
     @Override
-    public void updateByIdRange(@RequestParam Integer startID, @RequestParam Integer endID) {
+    public void updateByIdRange(Integer startID, Integer endID) {
+        log.info("Controller ==> updateByIdRange() - start: range = [{},{}]", startID, endID);
         service.updateData(startID, endID);
-        log.info("Data was successfully updated.");
+        log.info("Controller ==> updateByIdRange() - end: ");
     }
 
     @Override
-    public void updateByIdRangePatch(@RequestParam Integer startID, @RequestParam Integer endID) {
+    public void updateByIdRangePatch(Integer startID, Integer endID) {
+        log.info("Controller ==> updateByIdRangePatch() - start: range = [{},{}]", startID, endID);
         service.updateCountryDataByPatch(startID, endID);
-        log.info("Data was successfully updated.");
+        log.info("Controller ==> updateByIdRangePatch() - end: ");
     }
 
     @Override
-    public void updateCountryDataByMerge(@RequestParam Integer startID, @RequestParam Integer endID) {
+    public void updateCountryDataByMerge(Integer startID, Integer endID) {
+        log.info("Controller ==> updateCountryDataByMerge() - start: range = [{},{}]", startID, endID);
         service.updateCountryDataByMerge(startID, endID);
-        log.info("Data was successfully updated.");
+        log.info("Controller ==> updateCountryDataByMerge() - end: ");
     }
 
     @Override
-    public List<Employee> sendEmail(@RequestParam Integer startID, @RequestParam Integer endID, @RequestParam Integer days, @RequestParam  String text) {
-        log.info("Start sendEmail");
-        return service.sendEmail(startID, endID, days, text);
+    public List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text) {
+        log.info("Controller ==> sendEmail() - start: range = [{},{}], days = {}", startID, endID, days);
+        List<Employee> employees = service.sendEmail(startID, endID, days, text);
+        log.info("Controller ==> sendEmail() - end: employees = {}", employees);
+        return employees;
     }
 
     @Override
-    public List<Employee> countryChangers(@RequestParam String country) {
-        return service.getEmployeeMetrics(country);
+    public List<Employee> countryChangers(String country) {
+        log.info("Controller ==> countryChangers() - start: country = {}", country);
+        List<Employee> employees = service.getEmployeeMetrics(country);
+        log.info("Controller ==> countryChangers() - end: employees = {}", employees);
+        return employees;
     }
 }
