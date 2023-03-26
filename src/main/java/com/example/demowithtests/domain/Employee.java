@@ -25,13 +25,11 @@ public class Employee {
     private String email;
     private Boolean isDeleted = Boolean.FALSE;
 
-  //  @OneToMany(cascade = CascadeType.ALL)
-  @OneToMany(fetch = FetchType.EAGER)
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Set<Address> addresses = new HashSet<>();
 
-  //  @OneToMany(cascade = CascadeType.ALL)
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Set<Photo> photos = new HashSet<>();
 

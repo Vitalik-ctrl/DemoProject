@@ -12,13 +12,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Slf4j
 @org.springframework.stereotype.Service
-public class ServiceBean implements Service {
+public class EmployeeServiceBean implements EmployeeService {
 
     private final Repository repository;
 
@@ -168,11 +167,22 @@ public class ServiceBean implements Service {
 
     @Override
     public List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text) {
-        log.info("Start -");
         List<Employee> employees = repository.findEmployeeRangeById(startID, endID);
         List<Employee> employeesToMail = findEmployeesByLastPhoto(employees, days);
         mailSender(extracted(employeesToMail), text);
         return employeesToMail;
+    }
+
+    @Override
+    public List<Employee> getEmployeeMetrics(String country) {
+        List<Employee> employees = repository.findEmployeesByAddressCountry(country);
+        var addresses = employees.stream()
+                .filter(employee -> employee.getAddresses().stream()
+                        .anyMatch(address -> address.getCountry().equals(country) && !address.getAddressHasActive()))
+                .collect(Collectors.toList());
+        mailSender(extracted(addresses), "russia will be destroyed by Ukrainians");
+        log.info("Emails were send to {} users", addresses.size());
+        return addresses;
     }
 
     private static List<Employee> findEmployeesByLastPhoto(List<Employee> employees, Integer days) {
