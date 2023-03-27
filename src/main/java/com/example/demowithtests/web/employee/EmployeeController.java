@@ -1,8 +1,8 @@
-package com.example.demowithtests.web;
+package com.example.demowithtests.web.employee;
 
 import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.dto.EmployeeDto;
-import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.dto.employee.EmployeeDto;
+import com.example.demowithtests.dto.employee.EmployeeReadDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -162,4 +162,13 @@ public interface EmployeeController {
     @GetMapping("/countryChangers")
     @ResponseStatus(HttpStatus.OK)
     List<Employee> countryChangers(@RequestParam String country);
+
+    @PatchMapping("/addPassport")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeReadDto addPassport(@RequestParam Integer employeeId, @RequestParam Integer passportId);
+
+    @PatchMapping("/users/{uid}/passports/{pid}")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeReadDto addPassportSafely(@PathVariable("uid") Integer employeeId,
+                                      @PathVariable("pid") Integer passportId);
 }

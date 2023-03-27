@@ -12,9 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Data
-@ToString
-@Getter
-@Setter
 public class Employee {
 
     @Id
@@ -25,13 +22,17 @@ public class Employee {
     private String email;
     private Boolean isDeleted = Boolean.FALSE;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Set<Address> addresses = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Set<Photo> photos = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "passport_id", referencedColumnName = "id")
+    private Passport passport;
 
     public Employee(String name, String country, String email, Boolean isDeleted) {
         this.name = name;

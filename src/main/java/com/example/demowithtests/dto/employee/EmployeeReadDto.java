@@ -1,6 +1,9 @@
-package com.example.demowithtests.dto;
+package com.example.demowithtests.dto.employee;
 
+import com.example.demowithtests.dto.passport.PassportResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
@@ -9,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @ToString
+@Getter
+@Setter
 public class EmployeeReadDto {
 
     @Schema(description = "Name of an employee.", example = "Billy", required = true)
@@ -20,5 +25,8 @@ public class EmployeeReadDto {
     @Schema(description = "Addresses of an employee.", example = "addresses", required = true)
     public Set<AddressDto> addresses = new HashSet<>();
     public Date today = Date.from(Instant.now());
+    public PassportResponseDto passport;
+
+
 
 }

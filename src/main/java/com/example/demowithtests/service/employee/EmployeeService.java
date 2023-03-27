@@ -1,6 +1,7 @@
-package com.example.demowithtests.service;
+package com.example.demowithtests.service.employee;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Passport;
 
 import java.util.List;
 
@@ -35,5 +36,7 @@ public interface EmployeeService {
     List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text);
 
     List<Employee> getEmployeeMetrics(String country);
+
+    Employee addPassport(Integer employeeId, Integer passportId);
 
 }
