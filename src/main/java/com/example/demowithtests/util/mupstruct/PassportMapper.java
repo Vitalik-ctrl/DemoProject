@@ -1,6 +1,6 @@
 package com.example.demowithtests.util.mupstruct;
 
-import com.example.demowithtests.domain.Passport;
+import com.example.demowithtests.domain.passport.Passport;
 import com.example.demowithtests.dto.passport.PassportRequestDto;
 import com.example.demowithtests.dto.passport.PassportResponseDto;
 import org.mapstruct.Mapper;

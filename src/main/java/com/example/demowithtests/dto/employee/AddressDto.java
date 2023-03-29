@@ -9,15 +9,15 @@ import java.util.Date;
 @ToString
 public class AddressDto {
 
-    @Schema(description = "Address activity.", example = "True", required = true)
+    @Schema(description = "Address activity.", example = "True")
     public Boolean addressHasActive = Boolean.TRUE;
-    @Schema(description = "Address country.", example = "Ukraine", required = true)
+    @Schema(description = "Address country.", example = "Ukraine")
     public String country;
-    @Schema(description = "Address city.", example = "Odesa", required = true)
+    @Schema(description = "Address city.", example = "Odesa")
     public String city;
-    @Schema(description = "Address street.", example = "Akademska", required = true)
+    @Schema(description = "Address street.", example = "Akademska")
     public String street;
-    @Schema(description = "Date address was added.", example = "2023-03-25", required = true)
+    @Schema(description = "Date address was added.", example = "2023-03-25")
     public Date date = Date.from(Instant.now());
 
 }

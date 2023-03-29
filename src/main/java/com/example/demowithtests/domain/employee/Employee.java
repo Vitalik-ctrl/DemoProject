@@ -1,5 +1,6 @@
-package com.example.demowithtests.domain;
+package com.example.demowithtests.domain.employee;
 
+import com.example.demowithtests.domain.passport.Passport;
 import lombok.*;
 
 import javax.persistence.*;

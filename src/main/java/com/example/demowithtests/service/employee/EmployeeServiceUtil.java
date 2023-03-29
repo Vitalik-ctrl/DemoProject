@@ -1,7 +1,7 @@
 package com.example.demowithtests.service.employee;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Photo;
+import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.domain.employee.Photo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;

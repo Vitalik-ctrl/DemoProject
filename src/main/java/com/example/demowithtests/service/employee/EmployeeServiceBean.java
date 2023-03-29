@@ -1,7 +1,7 @@
 package com.example.demowithtests.service.employee;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Passport;
+import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.domain.passport.Passport;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.repository.PassportRepository;
 import com.example.demowithtests.util.exceptions.*;

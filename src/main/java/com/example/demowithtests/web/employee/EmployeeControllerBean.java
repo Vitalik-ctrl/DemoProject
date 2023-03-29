@@ -1,8 +1,8 @@
 package com.example.demowithtests.web.employee;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.dto.employee.EmployeeDto;
-import com.example.demowithtests.dto.employee.EmployeeReadDto;
+import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.dto.employee.EmployeeRequestDto;
+import com.example.demowithtests.dto.employee.EmployeeResponseDto;
 import com.example.demowithtests.service.employee.EmployeeService;
 import com.example.demowithtests.util.mupstruct.EmployeeMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,113 +21,113 @@ import java.util.List;
 @Tag(name = "Employee", description = "Employee API")
 public class EmployeeControllerBean implements EmployeeController {
 
-    private final EmployeeService service;
+    private final EmployeeService employeeService;
     private final EmployeeMapper employeeMapper;
 
     @Override
-    public EmployeeReadDto saveEmployee(EmployeeDto employeeDto) {
-        log.info("Controller ==> saveEmployee() - start: employeeDto = {}", employeeDto);
-        Employee employee = employeeMapper.employeeFromEmployeeDto(employeeDto);
-        EmployeeReadDto readDto = employeeMapper.toEmployeeReadDto(service.create(employee));
-        log.info("Controller ==> saveEmployee() - end: employeeReadDto = {}", readDto);
-        return readDto;
+    public EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
+        log.info("Controller ==> saveEmployee() - start: employeeRequestDto = {}", employeeRequestDto);
+        Employee employee = employeeMapper.fromRequestDto(employeeRequestDto);
+        EmployeeResponseDto responseDto = employeeMapper.toResponseDto(employeeService.create(employee));
+        log.info("Controller ==> saveEmployee() - end: employeeReadDto = {}", responseDto);
+        return responseDto;
     }
 
     @Override
-    public List<EmployeeReadDto> getAllUsers() {
+    public List<EmployeeResponseDto> getAllUsers() {
         log.info("Controller ==> getAllUsers() - start: ");
-        List<Employee> employees = service.getAll();
-        List<EmployeeReadDto> employeesReadDto = new ArrayList<>();
+        List<Employee> employees = employeeService.getAll();
+        List<EmployeeResponseDto> employeeResponseDtoList = new ArrayList<>();
         for (Employee employee : employees) {
-            employeesReadDto.add(employeeMapper.toEmployeeReadDto(employee));
+            employeeResponseDtoList.add(employeeMapper.toResponseDto(employee));
         }
         log.info("Controller ==> getAllUsers() - end: ");
-        return employeesReadDto;
+        return employeeResponseDtoList;
     }
 
     @Override
-    public EmployeeReadDto getEmployeeById(Integer id) {
+    public EmployeeResponseDto getEmployeeById(Integer id) {
         log.info("Controller ==> getEmployeeById() - start: id = {}", id);
-        EmployeeReadDto employeeReadDto = employeeMapper.toEmployeeReadDto(service.getById(id));
-        log.info("Controller ==> getEmployeeById() - end: employeeReadDto = {}", employeeReadDto);
-        return employeeReadDto;
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employeeService.getById(id));
+        log.info("Controller ==> getEmployeeById() - end: employeeReadDto = {}", employeeResponseDto);
+        return employeeResponseDto;
     }
 
     @Override
-    public EmployeeReadDto refreshEmployee(Integer id, EmployeeDto employeeDto) {
-        log.info("Controller ==> refreshEmployee() - start: id = {}, employeeDto = {}", id, employeeDto);
-        EmployeeReadDto employeeReadDto = employeeMapper.toEmployeeReadDto(service.updateById(id, employeeMapper.employeeFromEmployeeDto(employeeDto)));
-        log.info("Controller ==> refreshEmployee() - end: id = {}, employeeReadDto = {}", id, employeeReadDto);
-        return employeeReadDto;
+    public EmployeeResponseDto refreshEmployee(Integer id, EmployeeRequestDto employeeRequestDto) {
+        log.info("Controller ==> refreshEmployee() - start: id = {}, employeeDto = {}", id, employeeRequestDto);
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employeeService.updateById(id, employeeMapper.fromRequestDto(employeeRequestDto)));
+        log.info("Controller ==> refreshEmployee() - end: id = {}, employeeReadDto = {}", id, employeeResponseDto);
+        return employeeResponseDto;
     }
 
     @Override
     public void removeEmployeeById(Integer id) {
         log.info("Controller ==> removeEmployeeById() - start: id = {}", id);
-        service.removeById(id);
+        employeeService.removeById(id);
         log.info("Controller ==> removeEmployeeById() - end: ");
     }
 
     @Override
     public void removeAllUsers() {
         log.info("Controller ==> removeAllUsers() - start: ");
-        service.removeAll();
+        employeeService.removeAll();
         log.info("Controller ==> removeAllUsers() - end: ");
     }
 
     @Override
     public void replace() {
         log.info("Controller ==> replace() - start: ");
-        service.processor();
+        employeeService.processor();
         log.info("Controller ==> replace() - end: ");
     }
 
     @Override
     public void sendEmail(String country, String text) {
         log.info("Controller ==> sendEmail() - start: country = {}", country);
-        service.sendEmailByCountry(country, text);
+        employeeService.sendEmailByCountry(country, text);
         log.info("Controller ==> sendEmail() - end: ");
     }
 
     @Override
     public void sendEmailByCity(String city, String text) {
         log.info("Controller ==> sendEmailByCity() - start: city = {}", city);
-        service.sendEmailByCountry(city, text);
+        employeeService.sendEmailByCountry(city, text);
         log.info("Controller ==> sendEmailByCity() - end: ");
     }
 
     @Override
     public void fillData(Integer range, String name, String email) {
         log.info("Controller ==> fillData() - start: range = {}, name = {}, email = {}", range, name, email);
-        service.fillData(range, name, email);
+        employeeService.fillData(range, name, email);
         log.info("Controller ==> fillData() - end: ");
     }
 
     @Override
     public void updateByIdRange(Integer startID, Integer endID) {
         log.info("Controller ==> updateByIdRange() - start: range = [{},{}]", startID, endID);
-        service.updateData(startID, endID);
+        employeeService.updateData(startID, endID);
         log.info("Controller ==> updateByIdRange() - end: ");
     }
 
     @Override
     public void updateByIdRangePatch(Integer startID, Integer endID) {
         log.info("Controller ==> updateByIdRangePatch() - start: range = [{},{}]", startID, endID);
-        service.updateCountryDataByPatch(startID, endID);
+        employeeService.updateCountryDataByPatch(startID, endID);
         log.info("Controller ==> updateByIdRangePatch() - end: ");
     }
 
     @Override
     public void updateCountryDataByMerge(Integer startID, Integer endID) {
         log.info("Controller ==> updateCountryDataByMerge() - start: range = [{},{}]", startID, endID);
-        service.updateCountryDataByMerge(startID, endID);
+        employeeService.updateCountryDataByMerge(startID, endID);
         log.info("Controller ==> updateCountryDataByMerge() - end: ");
     }
 
     @Override
     public List<Employee> sendEmail(Integer startID, Integer endID, Integer days, String text) {
         log.info("Controller ==> sendEmail() - start: range = [{},{}], days = {}", startID, endID, days);
-        List<Employee> employees = service.sendEmail(startID, endID, days, text);
+        List<Employee> employees = employeeService.sendEmail(startID, endID, days, text);
         log.info("Controller ==> sendEmail() - end: employees = {}", employees);
         return employees;
     }
@@ -135,23 +135,27 @@ public class EmployeeControllerBean implements EmployeeController {
     @Override
     public List<Employee> countryChangers(String country) {
         log.info("Controller ==> countryChangers() - start: country = {}", country);
-        List<Employee> employees = service.getEmployeeMetrics(country);
+        List<Employee> employees = employeeService.getEmployeeMetrics(country);
         log.info("Controller ==> countryChangers() - end: employees = {}", employees);
         return employees;
     }
 
     @Override
-    public EmployeeReadDto addPassport(Integer employeeId, Integer passportId) {
-        Employee employee = service.addPassport(employeeId, passportId);
-        EmployeeReadDto employeeReadDto = employeeMapper.toEmployeeReadDto(employee);
-        return employeeReadDto;
+    public EmployeeResponseDto addPassport(Integer employeeId, Integer passportId) {
+        log.info("Controller ==> addPassport() - start: employeeId = {}, passportId = {}", employeeId, passportId);
+        Employee employee = employeeService.addPassport(employeeId, passportId);
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employee);
+        log.info("Controller ==> addPassport() - end: employee = {}", employeeResponseDto);
+        return employeeResponseDto;
     }
 
 
-    public EmployeeReadDto addPassportSafely(Integer employeeId, Integer passportId){
-        Employee employee = service.addPassport(employeeId, passportId);
-        EmployeeReadDto employeeReadDto = employeeMapper.toEmployeeReadDto(employee);
-        return employeeReadDto;
+    public EmployeeResponseDto addPassportSafely(Integer employeeId, Integer passportId){
+        log.info("Controller ==> addPassportSafely() - start: employeeId = {}, passportId = {}", employeeId, passportId);
+        Employee employee = employeeService.addPassport(employeeId, passportId);
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employee);
+        log.info("Controller ==> addPassportSafely() - end: employee = {}", employeeResponseDto);
+        return employeeResponseDto;
     }
 
 }

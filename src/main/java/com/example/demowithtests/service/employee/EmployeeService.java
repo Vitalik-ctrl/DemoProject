@@ -1,7 +1,6 @@
 package com.example.demowithtests.service.employee;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Passport;
+import com.example.demowithtests.domain.employee.Employee;
 
 import java.util.List;
 

@@ -1,16 +1,15 @@
-package com.example.demowithtests.domain;
+package com.example.demowithtests.domain.employee;
 
 import lombok.*;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.Date;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "addresses")
+@Data
 @Builder
 @ToString
 public class Address {

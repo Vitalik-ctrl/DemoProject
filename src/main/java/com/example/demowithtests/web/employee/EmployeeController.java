@@ -1,8 +1,8 @@
 package com.example.demowithtests.web.employee;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.dto.employee.EmployeeDto;
-import com.example.demowithtests.dto.employee.EmployeeReadDto;
+import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.dto.employee.EmployeeRequestDto;
+import com.example.demowithtests.dto.employee.EmployeeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,7 +21,7 @@ public interface EmployeeController {
             @ApiResponse(responseCode = "409", description = "Employee already exists.")})
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    EmployeeReadDto saveEmployee(@RequestBody EmployeeDto employeeDto);
+    EmployeeResponseDto saveEmployee(@RequestBody EmployeeRequestDto employeeRequestDto);
 
     @Operation(summary = "This is endpoint to get all employees.", description = "Create request to get all employees.", tags = {"Employee"})
     @ApiResponses(value = {
@@ -31,7 +31,7 @@ public interface EmployeeController {
             @ApiResponse(responseCode = "500", description = "Server error.")})
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    List<EmployeeReadDto> getAllUsers();
+    List<EmployeeResponseDto> getAllUsers();
 
     @Operation(summary = "This is endpoint to get employee by ID.", description = "Create request to get employee by ID.", tags = {"Employee"})
     @ApiResponses(value = {
@@ -41,7 +41,7 @@ public interface EmployeeController {
             @ApiResponse(responseCode = "500", description = "Server error.")})
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    EmployeeReadDto getEmployeeById(@PathVariable Integer id);
+    EmployeeResponseDto getEmployeeById(@PathVariable Integer id);
 
     @Operation(summary = "This is endpoint to refresh employee by ID & new body.", description = "Create request to refresh employee by ID and body.", tags = {"Employee"})
     @ApiResponses(value = {
@@ -51,7 +51,7 @@ public interface EmployeeController {
             @ApiResponse(responseCode = "500", description = "Server error.")})
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    EmployeeReadDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto);
+    EmployeeResponseDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeRequestDto employeeRequestDto);
 
     @Operation(summary = "This is endpoint to remove employee by ID.", description = "Create request to remove employee by ID.", tags = {"Employee"})
     @ApiResponses(value = {
@@ -163,12 +163,23 @@ public interface EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     List<Employee> countryChangers(@RequestParam String country);
 
+    @Operation(summary = "This is endpoint to add passport to employee.", description = "Create request to add passport.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESS. Passport was added to employee."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. DB or Table don't exist."),
+            @ApiResponse(responseCode = "500", description = "Server error.")})
     @PatchMapping("/addPassport")
     @ResponseStatus(HttpStatus.OK)
-    EmployeeReadDto addPassport(@RequestParam Integer employeeId, @RequestParam Integer passportId);
+    EmployeeResponseDto addPassport(@RequestParam Integer employeeId, @RequestParam Integer passportId);
 
-    @PatchMapping("/users/{uid}/passports/{pid}")
+    @Operation(summary = "This is endpoint to add passport to employee safely.", description = "Create request to add passport.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESS. Passport was added to employee."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. DB or Table don't exist."),
+            @ApiResponse(responseCode = "500", description = "Server error.")})
+    @PatchMapping("users/{uid}/passports/{pid}")
     @ResponseStatus(HttpStatus.OK)
-    EmployeeReadDto addPassportSafely(@PathVariable("uid") Integer employeeId,
-                                      @PathVariable("pid") Integer passportId);
+    EmployeeResponseDto addPassportSafely(@PathVariable("uid") Integer employeeId, @PathVariable("pid") Integer passportId);
 }
