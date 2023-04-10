@@ -1,6 +1,7 @@
 package com.example.demowithtests.domain.employee;
 
 import com.example.demowithtests.domain.passport.Passport;
+import com.example.demowithtests.domain.workplace.Workplace;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +13,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class Employee {
 
     @Id
@@ -34,6 +36,10 @@ public class Employee {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "passport_id", referencedColumnName = "id")
     private Passport passport;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    private Set<Workplace> workplaces = new HashSet<>();
 
     public Employee(String name, String country, String email, Boolean isDeleted) {
         this.name = name;

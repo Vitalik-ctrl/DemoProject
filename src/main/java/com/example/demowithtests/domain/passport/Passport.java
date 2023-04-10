@@ -25,6 +25,7 @@ public class Passport {
     private String firstName;
     private String secondName;
     private LocalDate birthDate;
+    private Boolean isFree = Boolean.TRUE;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "passport_id")

@@ -1,6 +1,7 @@
 package com.example.demowithtests.web.employee;
 
 import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.domain.workplace.Workplace;
 import com.example.demowithtests.dto.employee.EmployeeRequestDto;
 import com.example.demowithtests.dto.employee.EmployeeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.SecondaryTable;
 import java.util.List;
+import java.util.Set;
 
 public interface EmployeeController {
 
@@ -182,4 +185,48 @@ public interface EmployeeController {
     @PatchMapping("users/{uid}/passports/{pid}")
     @ResponseStatus(HttpStatus.OK)
     EmployeeResponseDto addPassportSafely(@PathVariable("uid") Integer employeeId, @PathVariable("pid") Integer passportId);
+
+    @Operation(summary = "This is endpoint to add workplace to employee.", description = "Create request to add workplace.", tags = {"Workplace"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESS. Workplace was added to employee."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. DB or Table don't exist."),
+            @ApiResponse(responseCode = "500", description = "Server error.")})
+    @PatchMapping("users/{uid}/workplaces/{wid}")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeResponseDto addWorkplace(@PathVariable("uid") Integer employeeId, @PathVariable("wid") Integer workplaceId);
+
+    @Operation(summary = "This is endpoint to get workplaces of employee.", description = "Create request to get workplaces.", tags = {"Workplace"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESS. Workplaces were found."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. DB or Table don't exist."),
+            @ApiResponse(responseCode = "500", description = "Server error.")})
+    @GetMapping("users/{id}/workplaces")
+    @ResponseStatus(HttpStatus.OK)
+    Set<Workplace> getWorkplaces(@PathVariable("id") Integer id);
+
+    @Operation(summary = "This is endpoint to reconnect employee to another workplace.", description = "Create request to reconnect employee.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESS. Employee was reconnected."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. DB or Table don't exist."),
+            @ApiResponse(responseCode = "500", description = "Server error.")})
+    @PatchMapping("/user/{id}/reconnect")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeResponseDto reconnectToWorkplace(@PathVariable("id") Integer id);
+
+    @Operation(summary = "This is endpoint to find for employee best workplaces.", description = "Create request to find workplaces.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESS. Workplaces were found."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. DB or Table don't exist."),
+            @ApiResponse(responseCode = "500", description = "Server error.")})
+    @PatchMapping("/user/{id}/findWorkplaces")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeResponseDto findBestWorkplaces(@PathVariable("id") Integer id);
+
+
+
+
 }

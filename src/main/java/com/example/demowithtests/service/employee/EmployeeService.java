@@ -1,8 +1,10 @@
 package com.example.demowithtests.service.employee;
 
 import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.domain.workplace.Workplace;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EmployeeService {
 
@@ -38,4 +40,11 @@ public interface EmployeeService {
 
     Employee addPassport(Integer employeeId, Integer passportId);
 
+    Employee addWorkplace(Integer employeeId, Integer workspaceId);
+
+    Set<Workplace> getWorkplaces(Integer id);
+
+    Employee reconnectToWorkplace(Integer id);
+
+    Employee findBestWorkplaces(Integer id);
 }

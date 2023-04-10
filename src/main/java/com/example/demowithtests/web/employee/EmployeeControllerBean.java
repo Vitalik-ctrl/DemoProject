@@ -1,6 +1,7 @@
 package com.example.demowithtests.web.employee;
 
 import com.example.demowithtests.domain.employee.Employee;
+import com.example.demowithtests.domain.workplace.Workplace;
 import com.example.demowithtests.dto.employee.EmployeeRequestDto;
 import com.example.demowithtests.dto.employee.EmployeeResponseDto;
 import com.example.demowithtests.service.employee.EmployeeService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -158,4 +160,38 @@ public class EmployeeControllerBean implements EmployeeController {
         return employeeResponseDto;
     }
 
+    @Override
+    public EmployeeResponseDto addWorkplace(Integer employeeId, Integer workplaceId) {
+        log.info("Controller ==> addWorkplace() - start: employeeId = {}, workplaceId = {}", employeeId, workplaceId);
+        Employee employee = employeeService.addWorkplace(employeeId, workplaceId);
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employee);
+        log.info("Controller ==> addWorkplace() - end: employee = {}", employeeResponseDto);
+        return employeeResponseDto;
+    }
+
+    @Override
+    public Set<Workplace> getWorkplaces(Integer id) {
+        log.info("Controller ==> getWorkplaces() - start: id = {}", id);
+        Set<Workplace> workplaces = employeeService.getWorkplaces(id);
+        log.info("Controller ==> getWorkplaces() - end: workplaces = {}", workplaces);
+        return workplaces;
+    }
+
+    @Override
+    public EmployeeResponseDto reconnectToWorkplace(Integer id) {
+        log.info("Controller ==> reconnectToWorkplace() - start: id = {}", id);
+        Employee employee = employeeService.reconnectToWorkplace(id);
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employee);
+        log.info("Controller ==> reconnectToWorkplace() - end: employee = {}", employeeResponseDto);
+        return employeeResponseDto;
+    }
+
+    @Override
+    public EmployeeResponseDto findBestWorkplaces(Integer id) {
+        log.info("Controller ==> findBestWorkplaces() - start: id = {}", id);
+        Employee employee = employeeService.findBestWorkplaces(id);
+        EmployeeResponseDto employeeResponseDto = employeeMapper.toResponseDto(employee);
+        log.info("Controller ==> findBestWorkplaces() - end: employee = {}", employeeResponseDto);
+        return employeeResponseDto;
+    }
 }

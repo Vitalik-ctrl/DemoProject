@@ -18,7 +18,7 @@ public class PassportResponseDto {
     @Schema(description = "ID of the passport.", example = "21020")
     public Integer id;
     @Schema(description = "Serial number of an employee in the passport.", example = "UI-HFKS-138539J-FJS2")
-    public final UUID serialNumber = UUID.randomUUID();
+    public UUID serialNumber;
     @Schema(description = "First name of an employee in the passport.", example = "Weak")
     public String firstName;
     @Schema(description = "Second name of an employee in the passport.", example = "John")

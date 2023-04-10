@@ -1,6 +1,5 @@
 package com.example.demowithtests.web.passport;
 
-import com.example.demowithtests.domain.passport.Registration;
 import com.example.demowithtests.dto.passport.PassportRequestDto;
 import com.example.demowithtests.dto.passport.PassportResponseDto;
 import com.example.demowithtests.dto.passport.RegistrationDto;

@@ -2,8 +2,11 @@ package com.example.demowithtests.service.employee;
 
 import com.example.demowithtests.domain.employee.Employee;
 import com.example.demowithtests.domain.passport.Passport;
+import com.example.demowithtests.domain.workplace.State;
+import com.example.demowithtests.domain.workplace.Workplace;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.repository.PassportRepository;
+import com.example.demowithtests.repository.WorkplaceRepository;
 import com.example.demowithtests.util.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ public class EmployeeServiceBean implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final PassportRepository passportRepository;
+    private final WorkplaceRepository workplaceRepository;
 
     @Override
     public Employee create(Employee employee) {
@@ -206,6 +210,7 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Employee addPassport(Integer employeeId, Integer passportId) {
+        log.debug("Service ==> addPassport() - start: employeeId = {}, passportId = {}", employeeId, passportId);
         Employee employee = employeeRepository
                 .findById(employeeId)
                 .orElseThrow(IdNotFoundException::new);
@@ -213,6 +218,70 @@ public class EmployeeServiceBean implements EmployeeService {
                 .findById(passportId)
                 .orElseThrow(IdNotFoundException::new);
         employee.setPassport(passport);
+        log.debug("Service ==> addPassport() - end: employee = {}", employee);
         return employeeRepository.save(employee);
+    }
+
+    @Override
+    public Employee addWorkplace(Integer employeeId, Integer workspaceId) {
+        log.debug("Service ==> addWorkplace() - start: employeeId = {}, workspaceId = {}", employeeId, workspaceId);
+        Employee employee = employeeRepository
+                .findById(employeeId)
+                .orElseThrow(IdNotFoundException::new);
+        Workplace workplace = workplaceRepository
+                .findById(workspaceId)
+                .orElseThrow(IdNotFoundException::new);
+        if (workplace.getIsActive()) {
+            employee.getWorkplaces().add(workplace);
+        } else {
+            throw new UnhandledException();
+        }
+        employeeRepository.save(employee);
+        log.debug("Service ==> addWorkplace() - end: employee = {}", employee);
+        return employee;
+    }
+
+    @Override
+    public Set<Workplace> getWorkplaces(Integer id) {
+        log.debug("Service ==> getWorkspaces() - start: id = {}", id);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(IdNotFoundException::new);
+        Set<Workplace> workplaces = employee.getWorkplaces();
+        log.debug("Service ==> getWorkspaces() - end: id = {}", id);
+        return workplaces;
+    }
+
+    @Override
+    public Employee reconnectToWorkplace(Integer id) {
+        log.debug("Service ==> reconnectToWorkplace() - start: id = {}", id);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(IdNotFoundException::new);
+        List<Workplace> workplaces = workplaceRepository.findAll();
+        for (Workplace workplace: workplaces) {
+            if (workplace.getIsActive() && workplace.getEmployees().size() < workplace.getCapacity()) {
+                employee.getWorkplaces().add(workplace);
+                employeeRepository.save(employee);
+                break;
+            }
+        }
+        log.debug("Service ==> reconnectToWorkplace() - end: employee = {}", employee);
+        return employee;
+    }
+
+    @Override
+    public Employee findBestWorkplaces(Integer id) {
+        log.debug("Service ==> findBestWorkplaces() - start: id = {}", id);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(IdNotFoundException::new);
+        employee.getWorkplaces().clear();
+        List<Workplace> workplaces = workplaceRepository.findAll();
+        employee.getWorkplaces()
+                .addAll(workplaces.stream()
+                .filter(workplace -> workplace.getIsActive()
+                && workplace.getState() == State.GOOD
+                && workplace.getEmployees().size() * 2 <= workplace.getCapacity())
+                .collect(Collectors.toSet()));
+        log.debug("Service ==> findBestWorkplaces() - end: workplaces = {}", employee.getWorkplaces());
+        return employee;
     }
 }
