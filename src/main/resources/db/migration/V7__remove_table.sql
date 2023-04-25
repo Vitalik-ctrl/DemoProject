@@ -1,1 +1,1 @@
-drop table new_table cascade;
+-- drop table new_table cascade;

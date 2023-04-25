@@ -1,1 +1,1 @@
-alter table users add if not exists gender1 varchar;
+-- alter table users add if not exists gender1 varchar;

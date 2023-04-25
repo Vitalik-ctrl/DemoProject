@@ -1,1 +1,1 @@
-alter table public.users drop gender1;
+-- alter table public.users drop gender1;
