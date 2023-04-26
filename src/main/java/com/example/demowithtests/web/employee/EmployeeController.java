@@ -226,7 +226,41 @@ public interface EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     EmployeeResponseDto findBestWorkplaces(@PathVariable("id") Integer id);
 
+    @Operation(summary = "This is endpoint to add a new employee.", description = "Create request to add a new employee.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "CREATED. The new employee is successfully created and added to database."),
+            @ApiResponse(responseCode = "400", description = "Invalid input."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. Specified employee request not found."),
+            @ApiResponse(responseCode = "409", description = "Employee already exists.")})
+    @PostMapping("/users/save")
+    @ResponseStatus(HttpStatus.CREATED)
+    EmployeeResponseDto save(@RequestBody EmployeeRequestDto requestDto);
 
+    @Operation(summary = "This is endpoint to find by id user using entity Manager.", description = "Create request to find by id user with entityManager.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESSFULLY. The user was created using entityManager."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. Database not found."),
+            @ApiResponse(responseCode = "500", description = "server error")})
+    @GetMapping("/users/find/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeResponseDto findEmployee(@PathVariable("id") Integer id);
 
+    @Operation(summary = "This is endpoint to update user using entity Manager.", description = "Create request to update user with entityManager.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESSFULLY. The user was updated using entityManager."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. Database not found."),
+            @ApiResponse(responseCode = "500", description = "server error")})
+    @PostMapping("/users/update/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    EmployeeResponseDto updateEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeRequestDto requestDto);
+
+    @Operation(summary = "This is endpoint to show deactivation of user using entity Manager.", description = "Create request to show detach of user with entityManager.", tags = {"Employee"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SUCCESSFULLY. The user was deactivated using entityManager."),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND. Database not found."),
+            @ApiResponse(responseCode = "500", description = "server error")})
+    @PostMapping("/users/detach/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    void detachEmployee(@PathVariable("id") Integer id);
 
 }

@@ -47,4 +47,12 @@ public interface EmployeeService {
     Employee reconnectToWorkplace(Integer id);
 
     Employee findBestWorkplaces(Integer id);
+
+    Employee save(Employee employee);
+
+    Employee find(Integer id);
+
+    Employee update(Integer id, Employee employee);
+
+    void detach(Integer id);
 }

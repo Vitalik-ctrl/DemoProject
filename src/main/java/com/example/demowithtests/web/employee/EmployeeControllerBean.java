@@ -194,4 +194,37 @@ public class EmployeeControllerBean implements EmployeeController {
         log.info("Controller ==> findBestWorkplaces() - end: employee = {}", employeeResponseDto);
         return employeeResponseDto;
     }
+
+    @Override
+    public EmployeeResponseDto save(EmployeeRequestDto requestDto) {
+        log.info("Controller ==> save() - start: employee = {}", requestDto);
+        EmployeeResponseDto responseDto = employeeMapper.
+                toResponseDto(employeeService.save(employeeMapper.fromRequestDto(requestDto)));
+        log.info("Controller ==> save() - end: employee = {}", responseDto);
+        return responseDto;
+    }
+
+    @Override
+    public EmployeeResponseDto findEmployee(Integer id) {
+        log.info("Controller ==> findEmployee() - start: id = {}", id);
+        EmployeeResponseDto responseDto = employeeMapper.toResponseDto(employeeService.find(id));
+        log.info("Controller ==> findEmployee() - end: employee = {}", responseDto);
+        return responseDto;
+    }
+
+    @Override
+    public EmployeeResponseDto updateEmployee(Integer id, EmployeeRequestDto requestDto) {
+        log.info("Controller ==> update() - start: employee = {}", requestDto);
+        EmployeeResponseDto responseDto = employeeMapper.toResponseDto(
+                employeeService.update(id, employeeMapper.fromRequestDto(requestDto)));
+        log.info("Controller ==> update() - end: employee = {}", responseDto);
+        return responseDto;
+    }
+
+    @Override
+    public void detachEmployee(Integer id) {
+        log.info("Controller ==> detachEmployee() - start: id = {}", id);
+        employeeService.detach(id);
+        log.info("Controller ==> detachEmployee() - end:");
+    }
 }

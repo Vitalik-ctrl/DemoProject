@@ -9,8 +9,12 @@ import com.example.demowithtests.repository.PassportRepository;
 import com.example.demowithtests.repository.WorkplaceRepository;
 import com.example.demowithtests.util.exceptions.*;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,8 @@ public class EmployeeServiceBean implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final PassportRepository passportRepository;
     private final WorkplaceRepository workplaceRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Employee create(Employee employee) {
@@ -283,5 +289,46 @@ public class EmployeeServiceBean implements EmployeeService {
                 .collect(Collectors.toSet()));
         log.debug("Service ==> findBestWorkplaces() - end: workplaces = {}", employee.getWorkplaces());
         return employee;
+    }
+
+    @Transactional
+    public Employee save(Employee employee) {
+        log.debug("Service ==> save() - start: employee = {}", employee);
+        entityManager.persist(employee);
+        log.debug("Service ==> save() - end:");
+        return employee;
+    }
+
+    @Transactional
+    @Override
+    public Employee find(Integer id) {
+        log.debug("Service ==> find() - start: id = {}", id);
+        Employee employee = entityManager.find(Employee.class, id);
+        log.debug("Service ==> find() - end: employee = {}", employee);
+        return employee;
+    }
+
+    @Transactional
+    @Override
+    public Employee update(Integer id, Employee employee) throws IdNotFoundException {
+        log.debug("Service ==> update() - start: id = {}", id);
+        Employee employeeToUpdate = entityManager.find(Employee.class, id);
+        if (employeeToUpdate == null) {
+            throw new IdNotFoundException();
+        }
+        employeeToUpdate.setName(employee.getName());
+        employeeToUpdate.setEmail(employee.getEmail());
+        employeeToUpdate.setCountry(employee.getCountry());
+        log.debug("Service ==> update() - end: employee = {}", employeeToUpdate);
+        return entityManager.merge(employeeToUpdate);
+    }
+
+    @Transactional
+    @Override
+    public void detach(Integer id) {
+        log.debug("Service ==> detach() - start: id = {}", id);
+        Employee employee = entityManager.find(Employee.class, id);
+        entityManager.detach(employee);
+        log.debug("Service ==> detach() - end: detached employee = {}", employee);
     }
 }
