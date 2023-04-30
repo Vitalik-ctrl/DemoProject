@@ -34,4 +34,9 @@ public class Passport {
     @OneToOne(mappedBy = "passport")
     private Employee employee;
 
+    public Passport(String firstName, String secondName, LocalDate birthDate) {
+        this.firstName = firstName;
+        this.secondName = secondName;
+        this.birthDate = birthDate;
+    }
 }

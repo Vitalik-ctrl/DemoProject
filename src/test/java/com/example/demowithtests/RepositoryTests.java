@@ -23,23 +23,23 @@ public class RepositoryTests {
     @Rollback(value = false)
     @DisplayName("save employee test")
     public void saveEmployeeTest() {
-        Employee employee = Employee.builder()
-                .name("Mark")
+        Employee johnDoe = Employee.builder()
+                .name("John")
                 .country("England")
                 .build();
-        employeeRepository.save(employee);
-        Assertions.assertThat(employee.getId()).isGreaterThan(0);
-        Assertions.assertThat(employee.getId()).isEqualTo(1);
-        Assertions.assertThat(employee.getName()).isEqualTo("Mark");
+        employeeRepository.save(johnDoe);
+        Assertions.assertThat(johnDoe.getId()).isGreaterThan(0);
+        Assertions.assertThat(johnDoe.getId()).isEqualTo(1);
+        Assertions.assertThat(johnDoe.getName()).isEqualTo("John");
     }
 
     @Test
     @Order(2)
     @DisplayName("get employee by id test")
     public void getEmployeeTest() {
-        Employee employee = employeeRepository.findById(1).orElseThrow();
-        Assertions.assertThat(employee.getId()).isEqualTo(1);
-        Assertions.assertThat(employee.getName()).isEqualTo("Mark");
+        Employee johnDoe = employeeRepository.findById(1).orElseThrow();
+        Assertions.assertThat(johnDoe.getId()).isEqualTo(1);
+        Assertions.assertThat(johnDoe.getName()).isEqualTo("John");
     }
 
     @Test
@@ -53,31 +53,65 @@ public class RepositoryTests {
     @Order(4)
     @Rollback(value = false)
     public void updateEmployeeTest() {
-        Employee employee = employeeRepository.findById(1).get();
-        employee.setName("Martin");
-        Employee employeeUpdated = employeeRepository.save(employee);
+        Employee johnDoe = employeeRepository.findById(1).get();
+        johnDoe.setName("Martin");
+        Employee employeeUpdated = employeeRepository.save(johnDoe);
         Assertions.assertThat(employeeUpdated.getName()).isEqualTo("Martin");
     }
 
-//    @Test
-//    @Order(5)
-//    @Rollback(value = false)
-//    public void deleteEmployeeTest() {
-//
-//        Employee employee = employeeRepository.findById(1).get();
-//
-//        employeeRepository.delete(employee);
-//
-//
-//        Employee employee1 = null;
-//
-//        Optional<Employee> optionalAuthor = Optional.ofNullable(employeeRepository.findByName("Martin"));
-//
-//        if (optionalAuthor.isPresent()) {
-//            employee1 = optionalAuthor.get();
-//        }
-//
-//        Assertions.assertThat(employee1).isNull();
-//    }
+    @Test
+    @Order(5)
+    @Rollback(value = false)
+    public void findByEmail_shouldReturnEmployee() {
+        String email = "john.doe@example.com";
+        Employee johnDoe = new Employee("John", "Doe", email, null);
+        employeeRepository.save(johnDoe);
+        Employee result = employeeRepository.findByEmail(email);
+        Assertions.assertThat(result).isEqualTo(johnDoe);
+    }
+
+    @Test
+    @Order(6)
+    @Rollback(value = false)
+    public void findEmployeeByIsDeletedNull_shouldReturnNonDeletedEmployees() {
+        Employee johnDoe = new Employee("John", "Doe", "john.doe@example.com", null);
+        employeeRepository.save(johnDoe);
+        Employee janeDoe = new Employee("Jane", "Doe", "jane.doe@example.com", false);
+        employeeRepository.save(janeDoe);
+        List<Employee> result = employeeRepository.findEmployeeByIsDeletedNull();
+        Assertions.assertThat(result).containsOnly(johnDoe);
+    }
+
+    @Test
+    @Order(7)
+    @Rollback(value = false)
+    public void findEmployeeByCountry_shouldReturnEmployeesInCountry() {
+        Employee johnDoe = new Employee("John", "Doe", "john.doe@example.com", false);
+        johnDoe.setCountry("USA");
+        employeeRepository.save(johnDoe);
+        Employee janeDoe = new Employee("Jane", "Doe", "jane.doe@example.com", false);
+        janeDoe.setCountry("Canada");
+        employeeRepository.save(janeDoe);
+        List<Employee> result = employeeRepository.findEmployeeByCountry("USA");
+        Assertions.assertThat(result).containsOnly(johnDoe);
+    }
+
+    @Test
+    @Order(8)
+    @Rollback(value = false)
+    public void findEmployeeRangeById_shouldReturnEmployeesInRange() {
+        Employee johnDoe = new Employee("John", "Doe", "john.doe@example.com", false);
+        employeeRepository.save(johnDoe);
+        Employee janeDoe = new Employee("Jane", "Doe", "jane.doe@example.com", false);
+        employeeRepository.save(janeDoe);
+        Employee aliceSmith = new Employee("Alice", "Smith", "alice.smith@example.com", false);
+        employeeRepository.save(aliceSmith);
+        List<Employee> result = employeeRepository.findEmployeeRangeById(1, 3);
+        Assertions.assertThat(result).containsOnly(johnDoe, janeDoe, aliceSmith);
+    }
+
+
+
+
 
 }

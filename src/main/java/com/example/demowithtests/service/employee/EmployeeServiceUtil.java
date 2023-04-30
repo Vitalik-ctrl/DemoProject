@@ -41,7 +41,7 @@ public class EmployeeServiceUtil {
         return !employee.getCountry().equals(country);
     }
 
-    protected static List<String> extracted(List<Employee> employees) {
+    public static List<String> extracted(List<Employee> employees) {
         List<String> emails = new ArrayList<>();
         for (Employee employee: employees) {
             emails.add(employee.getEmail());
@@ -49,7 +49,7 @@ public class EmployeeServiceUtil {
         return emails;
     }
 
-    protected static void mailSender(List<String> emails, String text) {
+    public static void mailSender(List<String> emails, String text) {
         log.debug("Emails were successfully sent.");
     }
 

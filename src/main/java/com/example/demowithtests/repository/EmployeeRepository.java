@@ -23,8 +23,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query(value = "select * from users where id between ?1 and ?2", nativeQuery = true)
     List<Employee> findEmployeeRangeById(Integer startID, Integer endID);
 
+    //  @Query(value = "select e from Employee e join Address a where a.addressHasActive=false and a.country=:country")
     @Query(value = "select * from users join addresses on addresses.employee_id=users.id where addresses.country=:country", nativeQuery = true)
-  //  @Query(value = "select e from Employee e join Address a where a.addressHasActive=false and a.country=:country")
     List<Employee> findEmployeesByAddressCountry(String country);
 
 }

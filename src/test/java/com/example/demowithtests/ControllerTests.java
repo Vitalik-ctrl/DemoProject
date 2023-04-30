@@ -44,11 +44,14 @@ public class ControllerTests {
         Employee employee = Employee.builder()
                 .name("John")
                 .build();
+
         Mockito.when(repository.save(employee)).thenReturn(employee);
+
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(employee));
+
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
